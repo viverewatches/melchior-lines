@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1328">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Melchior">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>King Melchior Lines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Midnight-and-gold line runner: one card at a time, cue above, your line below */
+  --bg:#eef1f7; --surface:#ffffff; --ink:#1b2140; --muted:#5d6584; --line:#d5dbea;
+  --accent:#b5841c; --accent-ink:#ffffff; --me:#fff6df;
+  --good:#2f7d4f; --bad:#b23b3b;
+  --display:"Cinzel", Georgia, serif; --body:"Source Sans 3", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1328; --surface:#181d3a; --ink:#e9ecf8; --muted:#a1a8c8; --line:#2c3360;
+    --accent:#e2b44a; --accent-ink:#141833; --me:#2a2a3a; --good:#5cc489; --bad:#ef7b7b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1328; --surface:#181d3a; --ink:#e9ecf8; --muted:#a1a8c8; --line:#2c3360;
+  --accent:#e2b44a; --accent-ink:#141833; --me:#2a2a3a; --good:#5cc489; --bad:#ef7b7b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:16px}
+header h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;letter-spacing:.02em;text-wrap:balance}
+header p{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;font:600 .95rem var(--body);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select,button,textarea{font:inherit}
+select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:.95rem;cursor:pointer}
+.progress{display:flex;gap:10px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.pill{padding:2px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-variant-numeric:tabular-nums}
+.pill.good{color:var(--good);border-color:var(--good)} .pill.bad{color:var(--bad);border-color:var(--bad)}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.cue{display:flex;flex-direction:column;gap:6px}
+.cue .who{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cue .stage{font-style:italic;color:var(--muted)}
+.cue .said{font-size:1.1rem}
+.mine{border-left:4px solid var(--accent);background:var(--me);border-radius:8px;padding:12px 14px;min-height:64px}
+.mine .who{font-family:var(--display);font-weight:700;font-size:.9rem;color:var(--accent);letter-spacing:.04em}
+.mine .dir{font-style:italic;color:var(--muted);font-size:.9rem}
+.mine .txt{font-size:1.2rem;font-weight:600}
+.mine .hidden{color:var(--muted);font-style:italic;font-weight:400;font-size:1rem}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.good{border-color:var(--good);color:var(--good)} .btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible,textarea:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);resize:vertical}
+.diff span{padding:0 1px;border-radius:3px}
+.diff .ok{color:var(--good)} .diff .miss{color:var(--bad);text-decoration:underline} .diff .extra{color:var(--muted);text-decoration:line-through}
+.score{font-weight:700;font-variant-numeric:tabular-nums}
+.keys{color:var(--muted);font-size:.85rem}
+.script{display:flex;flex-direction:column;gap:8px}
+.script .s{font-style:italic;color:var(--muted);padding:2px 0}
+.script .s.song{color:var(--accent);font-style:normal;font-weight:600}
+.script .l{padding:6px 10px;border-radius:8px}
+.script .l b{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:6px}
+.script .l.me{background:var(--me);border-left:4px solid var(--accent)}
+.script .l.me b{color:var(--accent)}
+.script .l.me.cover .t{filter:blur(6px);cursor:pointer;user-select:none}
+.script h3{font-family:var(--display);font-size:1rem;margin:14px 0 2px;color:var(--ink)}
+.why{font-size:.95rem;color:var(--ink);border:1px dashed var(--accent);border-radius:8px;padding:8px 12px}
+.why b{color:var(--accent);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+.script .w{display:block;font-size:.85rem;font-style:italic;color:var(--muted);margin-top:2px}
+.phase{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-variant-numeric:tabular-nums}
+.big{padding:14px 22px;font-size:1.1rem}
+.opts{display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:.95rem}
+.opts label{display:flex;gap:6px;align-items:center}
+.count{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.count>i{display:block;height:100%;background:var(--accent);width:0}
+.done{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.done h2{font-family:var(--display);margin:0}
+.tips{color:var(--muted);font-size:.95rem;margin:0;padding-left:20px}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>King Melchior: Line Runner</h1>
+    <p>“He is the King of Kings” · 49 lines in 6 sections · works offline</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-drill" aria-selected="true">Run lines</button>
+    <button class="tab" role="tab" id="tab-listen" aria-selected="false">Listen &amp; respond</button>
+    <button class="tab" role="tab" id="tab-type" aria-selected="false">Type it</button>
+    <button class="tab" role="tab" id="tab-script" aria-selected="false">Full script</button>
+  </div>
+
+  <div class="row" id="controls">
+    <select id="section" aria-label="Section"></select>
+    <label class="chk"><input type="checkbox" id="missedOnly"> Only lines I missed</label>
+    <label class="chk"><input type="checkbox" id="shuffle"> Shuffle</label>
+    <label class="chk"><input type="checkbox" id="showWhy" checked> Show what he wants</label>
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="bar"><i id="barfill"></i></div>
+
+  <main id="main"></main>
+  <ul class="tips">
+    <li>Before each line, read what Melchior wants, then say the line to someone (real or imagined) as if you mean it.</li>
+    <li>Say your line out loud before you reveal it. Hints show the first letter of each word, then the first half of the line.</li>
+    <li>Keyboard: <b>H</b> hint, <b>Space</b> show line, <b>→</b> got it, <b>←</b> missed.</li>
+  </ul>
+</div>
+
+<script>
+const DATA = {"items": [{"t": "s", "x": "Beautiful Star of Bethlehem - choir"}, {"t": "s", "x": "enter King Melchior and the Queen"}, {"t": "l", "w": "King Melchior", "x": "My queen, have you heard of the beautiful star over Bethlehem?", "d": null, "me": true, "n": 0}, {"t": "l", "w": "Queen", "x": "Yes, everyone is talking about it all over the kingdom.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "What are they saying?", "d": null, "me": true, "n": 1}, {"t": "l", "w": "Queen", "x": "Something about a bright star shining over the place where a new king has been born.  You are the astrologer in the family.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "What? A new king?  How can that be?", "d": null, "me": true, "n": 2}, {"t": "l", "w": "Queen", "x": "I have no idea!  That is just what I am hearing.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I need to know more! Who is this king?  Is he trying to overthrow me?", "d": null, "me": true, "n": 3}, {"t": "l", "w": "Queen", "x": "I heard that the star was over Bethlehem, not here is Persia.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "There was not a star above ME when I was born.  Why is this king so special?", "d": null, "me": true, "n": 4}, {"t": "l", "w": "Queen", "x": "I can’t tell you.  I don’t know.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I need to know!", "d": null, "me": true, "n": 5}, {"t": "l", "w": "Queen", "x": "Why don’t you ask the Nosy Neighbors of Nazareth and the Gossiping Gals of Galilee?  Those ladies know all of the happenings.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Excellent idea!  I will call for them at once.", "d": null, "me": true, "n": 6}, {"t": "s", "x": "rings his bell"}, {"t": "s", "x": "enter Page Turner"}, {"t": "l", "w": "Page Turner", "x": "You rang, Your Majesty?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Page Turner, have you heard of the mysterious star over Bethlehem?", "d": null, "me": true, "n": 7}, {"t": "l", "w": "Page Turner", "x": "I have.  It is the talk of the kingdom.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I need to know more about it and I must know that a new king is not a threat to me.  Call for the Nosy Neighbors of Nazareth and the Gossiping Gals of Galilee to come to see me.  I want to know what they may have heard.", "d": null, "me": true, "n": 8}, {"t": "l", "w": "Page Turner", "x": "I will do so at once.", "d": null, "me": false}, {"t": "s", "x": "Did You Hear the Story - choir"}, {"t": "s", "x": "NN of N come down the aisle noisily.  All three stop and bow to king"}, {"t": "l", "w": "Page Turner", "x": "Your majesty, I present to you - Naomi, Nellie and Nora - the Noisy Neighbors of Nazareth.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "You have been called here to tell what  you know about the bright star that was recently shining over Bethlehem.", "d": null, "me": true, "n": 9}, {"t": "l", "w": "Naomi", "x": "Well I heard that someone had a baby there in a well.", "d": null, "me": false}, {"t": "l", "w": "Nora", "x": "I heard it was in a marketplace.", "d": null, "me": false}, {"t": "l", "w": "Nellie", "x": "I heard that she had a baby boy in a stable.", "d": null, "me": false}, {"t": "l", "w": "Nora", "x": "A stable?  That is strange.  I heard it was a baby girl.", "d": null, "me": false}, {"t": "l", "w": "Naomi", "x": "The ladies circle said that she had twins.", "d": null, "me": false}, {"t": "l", "w": "Nora", "x": "It was a couple riding on a horse named James and Miriam.", "d": null, "me": false}, {"t": "l", "w": "Nellie", "x": "No. They came by camel from Jordan and their names were John and Mariah.", "d": null, "me": false}, {"t": "l", "w": "Naomi", "x": "The story that I got was that they came on a filthy donkey.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Ladies, ladies, thank you for coming, but I have heard enough.  You may take your leave.  Page Turner, please show them to the door.", "d": null, "me": true, "n": 10}, {"t": "l", "w": "Queen", "x": "That was confusing!", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Now I have more questions than ever.  What is the real story and who is this new king?", "d": null, "me": true, "n": 11}, {"t": "l", "w": "Page Turner", "x": "The Gossiping Gals of Galilee are arriving, Your Highness.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Good!  Maybe they have some more accurate information.", "d": null, "me": true, "n": 12}, {"t": "l", "w": "Page Turner", "x": "Presenting Grace, Gloria and Gladys - the Gossiping Gals of Galilee.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Greetings, ladies.  I am seeking information about the bright star shining over Bethlehem.  I am getting so many stories.  What do you know?", "d": null, "me": true, "n": 13}, {"t": "l", "w": "Gloria", "x": "I heard that there was a baby king born in a barn behind the inn.", "d": null, "me": false}, {"t": "l", "w": "Grace", "x": "I heard that too!  There were angels there and everything!", "d": null, "me": false}, {"t": "l", "w": "Gladys", "x": "Oh and there were shepherds watching over their flocks and they saw the star too and an angel told them to go see the little king, and they did.", "d": null, "me": false}, {"t": "l", "w": "Grace", "x": "When they got there the king was sleeping in a manger.", "d": null, "me": false}, {"t": "l", "w": "Gladys", "x": "The parents were not from Bethlehem.  They were in town for the census.", "d": null, "me": false}, {"t": "l", "w": "Gloria", "x": "The star was so bright that people could see it from far, far way.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "But how is this tiny child a king and where is his kingdom?  What does Herod have to say about all of this?", "d": null, "me": true, "n": 14}, {"t": "l", "w": "Gladys", "x": "We don’t know!  This is just what we heard in the gossip mill.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Thank you for your time.  You are dismissed.", "d": null, "me": true, "n": 15}, {"t": "s", "x": "to the page"}, {"t": "l", "w": "King Melchior", "x": "Page Turner, the ladies mentioned that there were shepherds on the hill near Bethlehem that saw this baby king.  Go seek them and bring them to me.", "d": null, "me": true, "n": 16}, {"t": "l", "w": "Grace", "x": "Come on, gals, let’s go shout from the mountaintop all that we have heard.", "d": null, "me": false}, {"t": "s", "x": "Go Tell It On the Mountain - choir"}, {"t": "l", "w": "Queen", "x": "Those Gossiping Gals are a lot!  It sounds to me like those shepherds on the hillside watching their flocks by night might actually know something about the king and the manger and all that.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "You are right, my dear!  From what the ladies were saying, the shepherds went to see the baby.  Surely they can enlighten us.  Page Turner, see if you can find any of those shepherds.", "d": null, "me": true, "n": 17}, {"t": "l", "w": "Page Turner", "x": "At once, Your Majesty.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I just don’t understand how a baby can be a king. Of what kingdom does he have dominion?", "d": null, "me": true, "n": 18}, {"t": "l", "w": "Queen", "x": "You do seem to be obsessing over this.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I am!  I think that I should go find this king and see him for myself.", "d": null, "me": true, "n": 19}, {"t": "l", "w": "Queen", "x": "Really? How would you begin to know where he is?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Maybe that star will lead me there.", "d": null, "me": true, "n": 20}, {"t": "l", "w": "Page Turner", "x": "Presenting Mr. Beau Peep, an eyewitness shepherd to the happenings in Bethlehem.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Wonderful!", "d": null, "me": true, "n": 21}, {"t": "l", "w": "Beau", "x": "Your highness.", "d": "bowing", "me": false}, {"t": "l", "w": "King Melchior", "x": "I have called you here this day to ask you questions.  Is it true that you saw the bright star shining in the East?", "d": null, "me": true, "n": 22}, {"t": "l", "w": "Beau", "x": "It is.  My fellow shepherds and I saw it.  It was almost blinding yet beautiful.  Then a group of Heavenly Hosts came and spoke to us.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "What? What did they say to you?", "d": null, "me": true, "n": 23}, {"t": "l", "w": "Beau", "x": "One of the angels said, ‘Do not be afraid.  I bring you good news and great joy for all the people.  Today in the Town of David a savior has been born to you.  He is the Messiah, the Lord.  This will be a sign to you.  You will find a baby wrapped in swaddling cloths and lying in a manger’  And then they all sang ‘Glory to God in the highest and on Earth peace and goodwill to men’.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Did you say that this baby king is the long awaited Messiah?", "d": null, "me": true, "n": 24}, {"t": "l", "w": "Beau", "x": "Yes!  We hurried to the place beneath the star and behold, it was just as the angels had said.  We met His mother Mary and His father Joseph.  This will be remembered forever.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Thank you Beau Peep.  You may return to your sheep.  I must go and meet this king for myself!", "d": null, "me": true, "n": 25}, {"t": "l", "w": "Queen", "x": "Are you crazy?  You are going to find a baby king?  You don’t even know where to look.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I will find Him. It is my quest.", "d": null, "me": true, "n": 26}, {"t": "l", "w": "Queen", "x": "Are you serious?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Yes.  I must know that this new king is not here to dethrone me and taking away my kingdom.  I should take a gift, but what do I take a baby?  I know.  I will take a fruit basket….or maybe just some papayas.", "d": null, "me": true, "n": 27}, {"t": "l", "w": "Queen", "x": "I think that you just may have lost your mind.", "d": null, "me": false}, {"t": "s", "x": "Shake the Papaya Down - choir"}, {"t": "l", "w": "King Melchior", "x": "Ok, that was a silly idea.  What could I take to a baby? I’ll ask Page Turner.  He is smart.", "d": null, "me": true, "n": 28}, {"t": "s", "x": "rings for Turner"}, {"t": "l", "w": "Page Turner", "x": "You rang?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "A new king has been born in Bethlehem.  I am going to meet him.  What should I take as a gift?", "d": null, "me": true, "n": 29}, {"t": "l", "w": "Page Turner", "x": "How about one of those bells so that the king can summon his page like happens regularly around here.", "d": "with a joking attitude", "me": false}, {"t": "l", "w": "King Melchior", "x": "A bell! What a fantastic idea!", "d": null, "me": true, "n": 30}, {"t": "l", "w": "Page Turner", "x": "I was only joking!", "d": null, "me": false}, {"t": "s", "x": "Ring Those Christmas Bells - choir"}, {"t": "l", "w": "Queen", "x": "As a woman I can tell you that a mother does not want her infant having a bell to ring every time he wants to call someone to his servitude.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Let me think!  Aha!  Your are right.  Even though they say that He is a king, he is a child.  I think what he needs is a toy!", "d": null, "me": true, "n": 31}, {"t": "l", "w": "Queen", "x": "What toy would you give a baby king?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Why a marvelous toy, of course.", "d": null, "me": true, "n": 32}, {"t": "s", "x": "Marvelous Toy - choir"}, {"t": "l", "w": "Queen", "x": "You can’t give the baby a toy that you don’t even know what it is.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Page Turner, you are young.  Any ideas for a gift for a baby king?", "d": null, "me": true, "n": 33}, {"t": "l", "w": "Page Turner", "x": "You know that I am partial to musical instruments.  How about something that he could learn to play as He grows older?", "d": null, "me": false}, {"t": "l", "w": "Queen", "x": "That is a lovely idea.  You could get Him a lute or a harp to make beautiful music and soothing sounds.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I like the idea, but it must be an instrument fir for a king!  I know…..a ukulele!", "d": null, "me": true, "n": 34}, {"t": "l", "w": "Queen", "x": "Melchior, you HAVE done lost your mind!", "d": null, "me": false}, {"t": "s", "x": "Ukulele  - choir and the Ukuladies"}, {"t": "l", "w": "Queen", "x": "You are a king.  Why don’t you just give the king something that you would like to have?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Good thinking!!! There are so many things that I would like to have.  Where do I begin?", "d": null, "me": true, "n": 35}, {"t": "s", "x": "Merry Christmas to Me - choir"}, {"t": "l", "w": "Page Turner", "x": "Why don’t you just take the new king the gift of gold?  You have lots, and it is a symbol of royalty and honor.", "d": null, "me": false}, {"t": "l", "w": "Queen", "x": "Yes!  Plus the parents may need it.  Babies are expensive.’", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Gold it is!  I am going to go and see this baby king and deliver the gift myself.  I must know just what kingdom is His.  Do we even know His name?", "d": null, "me": true, "n": 36}, {"t": "l", "w": "Page Turner", "x": "According to Mister Beau Peep, the baby’s name is Jesus.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Ok, I am taking gold to….what did you same is His name?", "d": null, "me": true, "n": 37}, {"t": "l", "w": "Queen", "x": "If you can’t remember that for one minute, how will you find your way to find the King?", "d": null, "me": false}, {"t": "s", "x": "What Did You Say Was the Baby’s Name?  - Aaron and choir"}, {"t": "l", "w": "King Melchior", "x": "Yes, Jesus!  I am going to find this Jesus.", "d": null, "me": true, "n": 38}, {"t": "l", "w": "Page Turner", "x": "You must be careful, your Highness!  There are wild beasts and robbers and speeding caravans out there.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "You are correct!  You shall go with me. So shall you, my queen.", "d": null, "me": true, "n": 39}, {"t": "l", "w": "Queen", "x": "Ah, no.  I am staying right here in Persia.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Prepare Omar my camel for the journey, and send word to the neighboring kingdoms that I am going.  Perhaps other wisemen would like to go as well. I think that I will swing by Judea and see if Herod has heard about the new king.", "d": null, "me": true, "n": 40}, {"t": "s", "x": "The king and the page leave through the back."}, {"t": "s", "x": "next scene - Herod and Doris"}, {"t": "l", "w": "Herod", "x": "Doris, have you heard any talk about a bright star in the sky recently?", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "Herod, that was so last year, but yes, there was a bright start somewhere near Bethlehem.", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "What is being said about it?", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "It is said that a new king was born and a star showed the place.  Sounds sketchy to me.", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "Did you say a new king? What is his kingdom?  Is this king a threat to my reign?", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "I told you all that I know.", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "I must find out more.  He must not be allowed to grow up and try to take over my kingdom.  I am going to sit now and think…and pout.", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "That’s what you do best.", "d": null, "me": false}, {"t": "s", "x": "Following the Star to Bethlehem - choir"}, {"t": "s", "x": "towards end of the song, King Mel on camel come down the aisle"}, {"t": "l", "w": "Doris", "x": "Someone is approaching on camel!", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "Who is it?", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "I’m not sure, but  it looks like Melchior from Persia.", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "Why would he pay me a visit?", "d": null, "me": false}, {"t": "l", "w": "Doris", "x": "Yes, it is definitely Melchior.", "d": null, "me": false}, {"t": "s", "x": "Page Turner knocks on the door of Herod’s place"}, {"t": "l", "w": "Herod’s guard", "x": "Who goes there?", "d": null, "me": false}, {"t": "l", "w": "Page Turner", "x": "I accompany King Melchior of Persia who has come to speak with Herod.", "d": null, "me": false}, {"t": "l", "w": "Herod’s guard", "x": "I will ask if he wishes to make audience with him.", "d": null, "me": false}, {"t": "l", "w": "Herod’s guard", "x": "King Herod, King Melchior would like…", "d": null, "me": false}, {"t": "l", "w": "Herod", "x": "I heard!  Melchior, what brings you so far from home?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I have been following a star in the east, seeking the child that they call the “King of the Jews”, the “Anointed One.", "d": null, "me": true, "n": 41}, {"t": "l", "w": "Herod", "x": "I am intrigued!  I wish you well on your search.  When you find this young king, return to me and report so that I may also seek Him and worship HIm.", "d": null, "me": false}, {"t": "s", "x": "King Mel and Page Turner turn and leave"}, {"t": "l", "w": "Herod", "x": "No king is coming to usurp my authority.  I will have all boys of age two and under in the whole Bethlehem area killed!", "d": "to Doris and the guard", "me": false}, {"t": "s", "x": "Herod, Doris and the guard leave"}, {"t": "s", "x": "star appears"}, {"t": "l", "w": "Page Turner", "x": "The star, your Majesty.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Let’s go!", "d": null, "me": true, "n": 42}, {"t": "s", "x": "They go to the door beneath the star.  Page Turner knocks and Mary answers, holding Jesus."}, {"t": "l", "w": "Mary", "x": "Hello", "d": null, "me": false}, {"t": "l", "w": "Page Turner", "x": "King Melchior of Persia seeks to meet the young Jesus, King of the Jews.", "d": null, "me": false}, {"t": "l", "w": "Mary", "x": "This is He.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Of what kingdom is this child ruler?", "d": null, "me": true, "n": 43}, {"t": "l", "w": "Mary", "x": "His kingdom is not of this world.  He is the Messiah, foretold in the scriptures.  He is the Son of God who shall rule at the right hand of His Father.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "I believe that we have met the Messiah.  He is the King of Kings.  I bring Him gold as a precious gift.  Glory to God.", "d": null, "me": true, "n": 44}, {"t": "s", "x": "Mary closes the door."}, {"t": "s", "x": "One King - choir"}, {"t": "l", "w": "King Melchior", "x": "We must return to Herod and tell him that we have met the King!", "d": null, "me": true, "n": 45}, {"t": "l", "w": "Angela", "x": "Hark! Stop!", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "What is this?", "d": null, "me": true, "n": 46}, {"t": "l", "w": "Angeline", "x": "We come to you with a warning.", "d": null, "me": false}, {"t": "l", "w": "Angela", "x": "Do not go back to Herod.  Go home another way.", "d": null, "me": false}, {"t": "l", "w": "Angeline", "x": "He is jealous of the new king and fears he will take his empire.", "d": null, "me": false}, {"t": "l", "w": "Angela", "x": "He is sending soldiers to kill all young boys in hopes of killing Jesus.", "d": null, "me": false}, {"t": "l", "w": "Angeline", "x": "We are going to warn His parents to flee to Egypt to escape.", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "We heed your warning and will return another way.  Glory to the King of Kings.", "d": null, "me": true, "n": 47}, {"t": "s", "x": "Let Earth Receive Her King - choir"}, {"t": "s", "x": "During song Mel returns home"}, {"t": "l", "w": "Queen", "x": "Welcome home!  Did you find Him?", "d": null, "me": false}, {"t": "l", "w": "King Melchior", "x": "Yes!  I met the Messiah!  He is MY king and your king and the king of all.  Come, let us worship the king!", "d": null, "me": true, "n": 48}, {"t": "s", "x": "Worship the King - choir"}], "mine": [{"i": 2, "cue": [0, 1], "sec": 0, "why": "He's heard whispers about a star. He brings it up to see if his queen knows more."}, {"i": 4, "cue": [3], "sec": 0, "why": "He wants details now. Lean in."}, {"i": 6, "cue": [5], "sec": 0, "why": "Alarm. Another king is a personal threat to him."}, {"i": 8, "cue": [7], "sec": 0, "why": "Fear turns into suspicion. He has no facts and assumes the worst."}, {"i": 10, "cue": [9], "sec": 0, "why": "Hurt pride. Why does this baby get a star when he didn't?"}, {"i": 12, "cue": [11], "sec": 0, "why": "Pure impatience. It's a royal demand, not a question."}, {"i": 14, "cue": [13], "sec": 0, "why": "Relief at having a plan. He acts right away."}, {"i": 18, "cue": [17], "sec": 0, "why": "He's checking whether the rumor has reached even his servant."}, {"i": 20, "cue": [19], "sec": 0, "why": "Giving orders. He wants to hear that the new king is no threat, so he calls for the gossips."}, {"i": 25, "cue": [24], "sec": 1, "why": "Formal and regal. He puts the ladies on the spot."}, {"i": 34, "cue": [33], "sec": 1, "why": "Swamped by nonsense. He shuts it down politely and gets them out."}, {"i": 36, "cue": [35], "sec": 1, "why": "Frustrated. He's more confused than before."}, {"i": 38, "cue": [37], "sec": 1, "why": "Hope returns. Maybe these ladies know something real."}, {"i": 40, "cue": [39], "sec": 1, "why": "Charming but weary. He wins them over to get straight answers."}, {"i": 47, "cue": [46], "sec": 1, "why": "Puzzled. A baby in a manger doesn't fit his idea of a king, and he wonders where Herod stands."}, {"i": 49, "cue": [48], "sec": 1, "why": "Done with gossip. A brisk dismissal."}, {"i": 51, "cue": [49, 50], "sec": 1, "why": "He grabs the one useful clue, the shepherds, and gives new orders."}, {"i": 55, "cue": [54], "sec": 1, "why": "Agreeing with his wife, and energized. The shepherds are the real witnesses."}, {"i": 57, "cue": [56], "sec": 2, "why": "Thinking out loud. This is the question of the whole play: what kind of king is this?"}, {"i": 59, "cue": [58], "sec": 2, "why": "The turning point. He decides to go and see for himself."}, {"i": 61, "cue": [60], "sec": 2, "why": "A hunch. He's an astrologer, so he trusts the star."}, {"i": 63, "cue": [62], "sec": 2, "why": "Delighted. Finally, an eyewitness."}, {"i": 65, "cue": [64], "sec": 2, "why": "A formal interview. He starts with the star."}, {"i": 67, "cue": [66], "sec": 2, "why": "Astonished. Angels? He needs every word."}, {"i": 69, "cue": [68], "sec": 2, "why": "Stunned. If this baby is the Messiah, everything changes."}, {"i": 71, "cue": [70], "sec": 2, "why": "Grateful, then resolved. His mind is made up: he is going."}, {"i": 73, "cue": [72], "sec": 3, "why": "Calm determination. This is his quest."}, {"i": 75, "cue": [74], "sec": 3, "why": "Still worried about his throne, then he turns to the gift problem and lands on a silly idea."}, {"i": 78, "cue": [76, 77], "sec": 3, "why": "He laughs at himself and hands the problem to the smart one."}, {"i": 81, "cue": [80], "sec": 3, "why": "A sincere request for advice."}, {"i": 83, "cue": [82], "sec": 3, "why": "He takes the joke seriously, with misplaced enthusiasm."}, {"i": 87, "cue": [86], "sec": 3, "why": "He gives in, thinks hard, and comes up with a new \"brilliant\" idea."}, {"i": 89, "cue": [88], "sec": 3, "why": "Confident, as if it's obvious."}, {"i": 92, "cue": [91], "sec": 3, "why": "He turns to the young one for fresh ideas."}, {"i": 95, "cue": [94], "sec": 3, "why": "He likes the idea but has to top it, and grandly lands on a ukulele."}, {"i": 99, "cue": [98], "sec": 3, "why": "Thrilled to have permission to shop for himself."}, {"i": 103, "cue": [102], "sec": 3, "why": "Decisive at last: gold. Then he realizes he doesn't know the baby's name."}, {"i": 105, "cue": [104], "sec": 3, "why": "Comic forgetfulness. The name is gone already."}, {"i": 108, "cue": [106, 107], "sec": 4, "why": "He has it now. He says the name with conviction."}, {"i": 110, "cue": [109], "sec": 4, "why": "He agrees and drafts the page and the queen into the trip."}, {"i": 112, "cue": [111], "sec": 4, "why": "The king in command. Quick orders, then a plan to check in with Herod."}, {"i": 136, "cue": [135], "sec": 5, "why": "Open and honest with Herod. He has no idea what Herod intends."}, {"i": 143, "cue": [142], "sec": 5, "why": "Excitement. The star is right here."}, {"i": 148, "cue": [147], "sec": 5, "why": "He finally asks the question he has carried through the whole play."}, {"i": 150, "cue": [149], "sec": 5, "why": "The answer lands. Awe and belief. His quest is complete."}, {"i": 153, "cue": [151, 152], "sec": 5, "why": "Eager and naive. He wants to share the good news with Herod."}, {"i": 155, "cue": [154], "sec": 5, "why": "Startled by the angels."}, {"i": 161, "cue": [160], "sec": 5, "why": "He heeds the warning with reverence."}, {"i": 165, "cue": [164], "sec": 5, "why": "Changed. He joyfully tells the queen what he found and invites everyone to worship."}], "sections": ["The star over Bethlehem", "Nosy Neighbors & Gossiping Gals", "Beau Peep the shepherd", "Choosing a gift", "Setting out", "Herod, Bethlehem & home"]};
+const items = DATA.items, mine = DATA.mines || DATA.mine, sections = DATA.sections;
+let store = {};
+try { store = JSON.parse(localStorage.getItem('melchior-progress') || '{}'); } catch(e) { store = {}; }
+const save = () => { try { localStorage.setItem('melchior-progress', JSON.stringify(store)); } catch(e) {} };
+
+let mode = 'drill', deck = [], pos = 0, hint = 0, revealed = false, coverScript = false;
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const sel = $('#section');
+sel.innerHTML = '<option value="all">All sections (49)</option>' +
+  sections.map((s,i) => `<option value="${i}">${i+1}. ${esc(s)} (${mine.filter(m=>m.sec===i).length})</option>`).join('');
+
+function buildDeck(){
+  if (typeof stopListen==='function') stopListen();
+  const v = sel.value;
+  deck = mine.map((m,n)=>({...m,n})).filter(m => v==='all' || m.sec===+v);
+  if ($('#missedOnly').checked) deck = deck.filter(m => store[m.n]==='miss');
+  if ($('#shuffle').checked) for (let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  pos = 0; hint = 0; revealed = false;
+  render();
+}
+
+function progress(){
+  const v = sel.value;
+  const pool = mine.map((m,n)=>({...m,n})).filter(m => v==='all' || m.sec===+v);
+  const g = pool.filter(m=>store[m.n]==='got').length, b = pool.filter(m=>store[m.n]==='miss').length;
+  $('#progress').innerHTML = `<span class="pill good">${g} got it</span><span class="pill bad">${b} missed</span><span class="pill">${pool.length-g-b} not tried</span>` +
+    `<button class="btn" id="reset" style="padding:2px 10px;font-size:.85rem">Reset progress</button>`;
+  $('#barfill').style.width = pool.length ? (g/pool.length*100)+'%' : '0';
+  $('#reset').onclick = () => { pool.forEach(m=>delete store[m.n]); save(); buildDeck(); };
+}
+
+function words(t){ return t.split(/\s+/).filter(Boolean); }
+function hintText(t){
+  const w = words(t);
+  if (hint===1) return w.map(x => x.replace(/^([^A-Za-z]*[A-Za-z])[A-Za-z’']*/, '$1_')).join(' ');
+  if (hint===2){ const h = Math.ceil(w.length/2); return w.slice(0,h).join(' ') + ' …'; }
+  return '';
+}
+
+function cueHTML(m){
+  return m.cue.map(i => {
+    const it = items[i];
+    if (it.t==='s') return `<div class="stage">(${esc(it.x)})</div>`;
+    return `<div><div class="who">${esc(it.w)}</div><div class="said">${esc(it.x)}</div></div>`;
+  }).join('');
+}
+
+function speak(text){
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = .95; speechSynthesis.speak(u); } catch(e) {}
+}
+
+function render(){
+  progress();
+  const main = $('#main');
+  $('#controls').style.display = mode==='script' ? 'none' : 'flex';
+  if (mode==='script') return renderScript();
+  if (mode==='listen') return renderListen();
+  if (!deck.length){
+    main.innerHTML = `<div class="card done"><h2>No lines here</h2><p>${$('#missedOnly').checked ? 'You have no missed lines in this section. Nice work.' : 'Pick another section.'}</p></div>`;
+    return;
+  }
+  if (pos >= deck.length){
+    const g = deck.filter(m=>store[m.n]==='got').length;
+    main.innerHTML = `<div class="card done"><h2>Section complete</h2><p class="score">${g} of ${deck.length} got it</p>
+      <div class="btns"><button class="btn primary" id="again">Run it again</button><button class="btn" id="missedRun">Drill the ones I missed</button></div></div>`;
+    $('#again').onclick = buildDeck;
+    $('#missedRun').onclick = () => { $('#missedOnly').checked = true; buildDeck(); };
+    return;
+  }
+  const m = deck[pos], me = items[m.i];
+  const status = store[m.n] ? (store[m.n]==='got' ? '✓ got it last time' : '✗ missed last time') : '';
+  let lineBox;
+  if (mode==='drill'){
+    lineBox = revealed ? `<div class="txt">${esc(me.x)}</div>`
+      : hint ? `<div class="txt">${esc(hintText(me.x))}</div>`
+      : `<div class="hidden">Say your line…</div>`;
+  } else {
+    lineBox = `<textarea id="answer" aria-label="Type your line" placeholder="Type your line from memory"></textarea><div id="result"></div>`;
+  }
+  main.innerHTML = `<div class="card">
+    <div class="meta"><span>${esc(sections[m.sec])}</span><span>Line ${m.n+1} of 49 · ${pos+1}/${deck.length} ${status ? '· '+status : ''}</span></div>
+    <div class="cue">${cueHTML(m)}</div>
+    ${$('#showWhy').checked ? `<div class="why"><b>What he wants</b>${esc(m.why)}</div>` : ''}
+    <div class="mine"><div class="who">KING MELCHIOR${me.d ? ` <span class="dir">(${esc(me.d)})</span>` : ''}</div>${lineBox}</div>
+    <div class="btns" id="actions"></div>
+  </div>
+  <div class="row"><button class="btn" id="prev" ${pos===0?'disabled':''}>← Back</button><button class="btn" id="listen">Read cue aloud</button></div>`;
+  $('#prev').onclick = () => { pos--; hint=0; revealed=false; render(); };
+  $('#listen').onclick = () => speak(m.cue.map(i=>items[i]).filter(x=>x.t==='l').map(x=>x.x).join(' ') || 'Your cue is a stage direction.');
+  const act = $('#actions');
+  if (mode==='drill'){
+    if (!revealed){
+      act.innerHTML = `<button class="btn" id="hint" ${hint>=2?'disabled':''}>${hint===0?'Hint: first letters':'More hint'}</button><button class="btn primary" id="show">Show line</button>`;
+      $('#hint').onclick = () => { hint++; render(); };
+      $('#show').onclick = () => { revealed = true; render(); };
+    } else {
+      act.innerHTML = `<button class="btn good" id="got">Got it →</button><button class="btn bad" id="miss">← Missed it</button><button class="btn" id="hear">Hear my line</button>`;
+      $('#got').onclick = () => mark('got');
+      $('#miss').onclick = () => mark('miss');
+      $('#hear').onclick = () => speak(me.x);
+    }
+  } else {
+    act.innerHTML = `<button class="btn primary" id="check">Check</button><button class="btn" id="skip">Skip</button>`;
+    $('#check').onclick = check;
+    $('#skip').onclick = () => { pos++; render(); };
+    setTimeout(()=>{ const a=$('#answer'); if(a) a.focus(); },0);
+  }
+}
+
+function mark(r){ store[deck[pos].n] = r; save(); pos++; hint=0; revealed=false; render(); }
+
+const norm = w => w.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9']/g,'');
+function scoreLine(targetText, saidText){
+  const target = words(targetText), said = words(saidText);
+  const A = target.map(norm), B = said.map(norm);
+  const dp = Array.from({length:A.length+1},()=>Array(B.length+1).fill(0));
+  for (let i=A.length-1;i>=0;i--) for (let j=B.length-1;j>=0;j--)
+    dp[i][j] = A[i]&&A[i]===B[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  let i=0,j=0,out=[],hit=0;
+  while (i<A.length || j<B.length){
+    if (i<A.length && j<B.length && A[i]===B[j]){ out.push(`<span class="ok">${esc(target[i])}</span>`); hit++; i++; j++; }
+    else if (j<B.length && (i>=A.length || dp[i][j+1]>=dp[i+1][j])){ out.push(`<span class="extra">${esc(said[j])}</span>`); j++; }
+    else { out.push(`<span class="miss">${esc(target[i])}</span>`); i++; }
+  }
+  return { pct: Math.round(hit / Math.max(A.filter(Boolean).length,1) * 100), html: out.join(' ') };
+}
+function check(){
+  const m = deck[pos], target = words(items[m.i].x), said = words($('#answer').value);
+  const A = target.map(norm), B = said.map(norm);
+  const dp = Array.from({length:A.length+1},()=>Array(B.length+1).fill(0));
+  for (let i=A.length-1;i>=0;i--) for (let j=B.length-1;j>=0;j--)
+    dp[i][j] = A[i]&&A[i]===B[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  let i=0,j=0,out=[],hit=0;
+  while (i<A.length || j<B.length){
+    if (i<A.length && j<B.length && A[i]===B[j]){ out.push(`<span class="ok">${esc(target[i])}</span>`); hit++; i++; j++; }
+    else if (j<B.length && (i>=A.length || dp[i][j+1]>=dp[i+1][j])){ out.push(`<span class="extra">${esc(said[j])}</span>`); j++; }
+    else { out.push(`<span class="miss">${esc(target[i])}</span>`); i++; }
+  }
+  const pct = Math.round(hit / Math.max(A.filter(Boolean).length,1) * 100);
+  $('#result').innerHTML = `<p class="score">${pct}% of the words</p><p class="diff">${out.join(' ')}</p>
+    <p class="keys">Green: right. Red underline: missed or wrong. Grey strike-through: words you added.</p>`;
+  $('#actions').innerHTML = `<button class="btn good" id="got">Count it →</button><button class="btn bad" id="miss">← Mark missed</button><button class="btn" id="retry">Try again</button>`;
+  $('#got').onclick = () => mark('got');
+  $('#miss').onclick = () => mark('miss');
+  $('#retry').onclick = render;
+  if (pct >= 90) { $('#got').classList.remove('good'); $('#got').classList.add('primary'); }
+}
+
+function renderScript(){
+  let html = `<div class="card"><div class="row"><label class="chk"><input type="checkbox" id="cover" ${coverScript?'checked':''}> Blur my lines (tap one to peek)</label></div><div class="script">`;
+  let sec = -1;
+  items.forEach((it,i) => {
+    if (it.t==='l' && it.me){ const m = mine[it.n]; if (m.sec!==sec){ sec=m.sec; html += `<h3>${sec+1}. ${esc(sections[sec])}</h3>`; } }
+    if (it.t==='s'){
+      const song = /choir/i.test(it.x);
+      html += `<div class="s${song?' song':''}">${song?'♪ ':''}${esc(it.x)}</div>`;
+    } else {
+      html += `<div class="l${it.me?' me':''}${it.me&&coverScript?' cover':''}"><b>${esc(it.w)}</b>${it.d?`<i>(${esc(it.d)})</i> `:''}<span class="t">${esc(it.x)}</span>${it.me ? `<span class="w">${esc(mine[it.n].why)}</span>` : ''}</div>`;
+    }
+  });
+  $('#main').innerHTML = html + '</div></div>';
+  $('#cover').onchange = e => { coverScript = e.target.checked; renderScript(); };
+  document.querySelectorAll('.l.me.cover').forEach(el => el.onclick = () => el.classList.toggle('cover'));
+}
+
+function setMode(m){
+  stopListen();
+  mode = m;
+  ['drill','listen','type','script'].forEach(x => $('#tab-'+x).setAttribute('aria-selected', x===m));
+  hint=0; revealed=false; render();
+}
+$('#tab-drill').onclick = () => setMode('drill');
+$('#tab-type').onclick = () => setMode('type');
+$('#tab-listen').onclick = () => setMode('listen');
+$('#tab-script').onclick = () => setMode('script');
+sel.onchange = buildDeck; $('#missedOnly').onchange = buildDeck; $('#shuffle').onchange = buildDeck; $('#showWhy').onchange = render;
+
+document.addEventListener('keydown', e => {
+  if (mode==='listen' && e.key===' ' && e.target.tagName!=='SELECT'){ e.preventDefault(); toggleListen(); return; }
+  if (mode!=='drill' || e.target.tagName==='TEXTAREA' || e.target.tagName==='SELECT') return;
+  if (pos>=deck.length) return;
+  if (e.key==='h' || e.key==='H'){ if(!revealed && hint<2){hint++;render();} }
+  else if (e.key===' '){ e.preventDefault(); if(!revealed){revealed=true;render();} }
+  else if (e.key==='ArrowRight' && revealed) mark('got');
+  else if (e.key==='ArrowLeft' && revealed) mark('miss');
+});
+
+/* ---------- Listen & respond ---------- */
+let L = { running:false, token:0, phase:'Ready', ctx:null, pace:'normal', replay:false, rate:0.95, tick:null, mic:true };
+try { Object.assign(L, JSON.parse(localStorage.getItem('melchior-listen')||'{}'), {running:false, token:0, phase:'Ready', ctx:null, tick:null}); } catch(e) {}
+const saveL = () => { try { localStorage.setItem('melchior-listen', JSON.stringify({pace:L.pace, replay:L.replay, rate:L.rate, mic:L.mic})); } catch(e) {} };
+const PACE = { quick:.45, normal:.6, generous:.85 };
+let voices = [];
+function loadVoices(){ try { voices = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)); } catch(e) {} }
+try { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } catch(e) {}
+const ttsOK = typeof window.speechSynthesis !== 'undefined';
+try { if (!(window.SpeechRecognition || window.webkitSpeechRecognition) && localStorage.getItem('melchior-listen') === null) L.replay = true; } catch(e) {}
+
+function say(text, pitch){
+  return new Promise(res => {
+    if (!ttsOK) return res();
+    const parts = text.match(/[^.!?…]+[.!?…]*/g) || [text];
+    let k = 0;
+    const next = () => {
+      if (k >= parts.length) return res();
+      const u = new SpeechSynthesisUtterance(parts[k++].trim());
+      u.rate = L.rate; u.pitch = pitch || 1;
+      if (voices.length) u.voice = voices.find(v=>/en-US/i.test(v.lang)) || voices[0];
+      u.onend = next; u.onerror = next;
+      try { speechSynthesis.speak(u); } catch(e) { res(); }
+    };
+    next();
+  });
+}
+function beep(){
+  try {
+    if (!L.ctx) return;
+    const o = L.ctx.createOscillator(), g = L.ctx.createGain();
+    o.frequency.value = 880; g.gain.setValueAtTime(.0001, L.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.25, L.ctx.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.0001, L.ctx.currentTime+.25);
+    o.connect(g).connect(L.ctx.destination); o.start(); o.stop(L.ctx.currentTime+.3);
+  } catch(e) {}
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function tone(ok){
+  try {
+    if (!L.ctx) return;
+    const freqs = ok ? [660, 990] : [330, 247];
+    freqs.forEach((f,k) => {
+      const o = L.ctx.createOscillator(), g = L.ctx.createGain(), s = L.ctx.currentTime + k*.13;
+      o.frequency.value = f; g.gain.setValueAtTime(.0001, s);
+      g.gain.exponentialRampToValueAtTime(.2, s+.02); g.gain.exponentialRampToValueAtTime(.0001, s+.2);
+      o.connect(g).connect(L.ctx.destination); o.start(s); o.stop(s+.22);
+    });
+  } catch(e) {}
+}
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function hear(maxMs, targetWords){
+  return new Promise(res => {
+    let r; try { r = new SR(); } catch(e) { return res(null); }
+    r.lang = 'en-US'; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+    let finalT = '', interim = '', done = false, last = 0, started = Date.now(), any = false;
+    const text = () => (finalT + ' ' + interim).trim();
+    const finish = val => {
+      if (done) return; done = true; clearInterval(iv);
+      try { r.stop(); } catch(e) {}
+      res(val === undefined ? text() : val);
+    };
+    r.onresult = e => {
+      finalT = ''; interim = '';
+      for (let i=0;i<e.results.length;i++){ const s = e.results[i][0].transcript; if (e.results[i].isFinal) finalT += s + ' '; else interim += s + ' '; }
+      any = true; last = Date.now(); L.heard = text();
+      const el = $('#heard'); if (el) el.textContent = L.heard;
+    };
+    r.onerror = e => {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){ L.micDenied = true; finish(null); }
+      else if (e.error === 'no-speech') finish('');
+      else finish(any ? undefined : null);
+    };
+    r.onend = () => finish();
+    const iv = setInterval(() => {
+      const now = Date.now(), n = words(text()).length;
+      const f = Math.min(1,(now-started)/maxMs), el = $('#countfill'); if (el) el.style.width = (f*100)+'%';
+      if (now - started > maxMs) finish();
+      else if (any && now - last > 1300 && n >= Math.max(1, Math.floor(targetWords*.7))) finish();
+      else if (any && now - last > 2600) finish();
+    }, 100);
+    try { r.start(); } catch(e) { finish(null); }
+  });
+}
+function cueSpeech(m){
+  return m.cue.map(i => {
+    const it = items[i];
+    if (it.t==='s') return /choir/i.test(it.x) ? `After the song, ${it.x.replace(/\s*-\s*choir.*$/i,'')}.` : `Stage direction: ${it.x}.`;
+    return `${it.w === 'Page Turner' ? 'Page Turner' : it.w}: ${it.x}`;
+  }).join(' ');
+}
+function setPhase(p, show){ L.phase = p; L.show = !!show; if (mode==='listen') renderListen(); }
+
+async function runListen(){
+  const my = ++L.token; L.running = true;
+  while (L.running && my===L.token && pos < deck.length){
+    const m = deck[pos], me = items[m.i];
+    setPhase('Cue', false);
+    try { speechSynthesis.cancel(); } catch(e) {}
+    await say(cueSpeech(m), 1);
+    if (my!==L.token) return;
+    beep();
+    const gap = 1500 + words(me.x).length * PACE[L.pace] * 1000;
+    if (L.mic && SR && !L.micDenied){
+      L.heard = ''; L.result = null;
+      setPhase('Listening', false);
+      const said = await hear(gap + 2500, words(me.x).length);
+      if (my!==L.token) return;
+      if (said !== null){
+        const r = scoreLine(me.x, said);
+        L.result = { ...r, said };
+        const ok = r.pct >= 80;
+        store[m.n] = ok ? 'got' : 'miss'; save(); progress();
+        setPhase(ok ? `Got it · ${r.pct}%` : `Missed · ${r.pct}%`, true);
+        tone(ok);
+        await wait(350);
+        if (!ok || L.replay){ await say(me.x, 1.15); if (my!==L.token) return; }
+        await wait(ok ? 700 : 1400);
+        if (my!==L.token) return;
+        pos++; continue;
+      }
+    }
+    setPhase('Your line', false);
+    const t0 = Date.now();
+    await new Promise(r => {
+      L.tick = setInterval(() => {
+        const f = Math.min(1,(Date.now()-t0)/gap), el = $('#countfill');
+        if (el) el.style.width = (f*100)+'%';
+        if (f>=1 || my!==L.token){ clearInterval(L.tick); r(); }
+      }, 80);
+    });
+    if (my!==L.token) return;
+    setPhase('Check', true);
+    if (L.replay){ await say(me.x, 1.15); if (my!==L.token) return; }
+    await wait(900);
+    if (my!==L.token) return;
+    pos++;
+  }
+  if (my===L.token){ L.running = false; setPhase(pos>=deck.length ? 'Done' : 'Paused', false); }
+}
+function stopListen(){
+  L.running = false; L.token++; clearInterval(L.tick);
+  try { speechSynthesis.cancel(); } catch(e) {}
+}
+function toggleListen(){
+  if (L.running){ stopListen(); setPhase('Paused', false); return; }
+  try { if (!L.ctx) L.ctx = new (window.AudioContext||window.webkitAudioContext)(); L.ctx.resume(); } catch(e) {}
+  if (pos >= deck.length) pos = 0;
+  runListen();
+}
+function jump(d){ const was = L.running; stopListen(); pos = Math.max(0, Math.min(deck.length-1, pos+d)); if (was) runListen(); else setPhase('Paused', false); }
+
+function renderListen(){
+  const main = $('#main');
+  if (!deck.length){ main.innerHTML = `<div class="card done"><h2>No lines here</h2><p>Pick another section or untick "Only lines I missed".</p></div>`; return; }
+  if (!ttsOK){ main.innerHTML = `<div class="card done"><h2>Speech isn't available</h2><p>This browser can't read text aloud. Try Chrome or Safari on your phone or computer.</p></div>`; return; }
+  if (pos >= deck.length && L.phase!=='Done') pos = 0;
+  const m = deck[Math.min(pos, deck.length-1)], me = items[m.i];
+  const done = L.phase==='Done';
+  const lineBox = done ? `<div class="txt">That's the end of this run.</div>`
+    : L.phase==='Listening' ? `<div class="hidden">Listening… say your line.</div><div class="txt" id="heard" style="font-weight:400">${esc(L.heard||'')}</div>`
+    : (L.show && L.result && L.phase!=='Check') ? `<div class="txt">${esc(me.x)}</div><p class="diff" style="margin:8px 0 0">${L.result.html}</p><p class="keys" style="margin:4px 0 0">Heard: “${esc(L.result.said || '(nothing)')}”</p>`
+    : L.show ? `<div class="txt">${esc(me.x)}</div>`
+    : `<div class="hidden">${L.phase==='Your line' ? 'Say your line now…' : 'Listen for your cue…'}</div>`;
+  main.innerHTML = `<div class="card">
+    <div class="meta"><span class="phase">${esc(L.phase)}</span><span>${esc(sections[m.sec])} · ${Math.min(pos+1,deck.length)}/${deck.length}</span></div>
+    ${done ? '' : `<div class="cue">${cueHTML(m)}</div>`}
+    ${!done && $('#showWhy').checked ? `<div class="why"><b>What he wants</b>${esc(m.why)}</div>` : ''}
+    <div class="mine"><div class="who">KING MELCHIOR</div>${lineBox}</div>
+    ${(L.phase==='Your line'||L.phase==='Listening') ? '<div class="count"><i id="countfill"></i></div>' : ''}
+    <div class="btns">
+      <button class="btn primary big" id="lplay">${L.running ? 'Pause' : (done ? 'Start over' : (L.phase==='Ready' ? 'Start' : 'Resume'))}</button>
+      <button class="btn" id="lback" ${pos===0?'disabled':''}>← Back</button>
+      <button class="btn" id="lskip" ${pos>=deck.length-1?'disabled':''}>Skip →</button>
+    </div>
+    ${L.phase==='Check' ? `<div class="btns"><button class="btn good" id="lgot">Got it</button><button class="btn bad" id="lmiss">Missed it</button></div>` : ''}
+    <div class="opts">
+      <label for="lpace">Pause for my line <select id="lpace">
+        <option value="quick" ${L.pace==='quick'?'selected':''}>Quick</option>
+        <option value="normal" ${L.pace==='normal'?'selected':''}>Normal</option>
+        <option value="generous" ${L.pace==='generous'?'selected':''}>Generous</option></select></label>
+      <label for="lrate">Voice speed <select id="lrate">
+        <option value="0.85" ${L.rate==0.85?'selected':''}>Slower</option>
+        <option value="0.95" ${L.rate==0.95?'selected':''}>Normal</option>
+        <option value="1.1" ${L.rate==1.1?'selected':''}>Faster</option></select></label>
+      ${SR ? `<label><input type="checkbox" id="lmic" ${L.mic?'checked':''}> Score me with the microphone</label>` : ''}
+      <label><input type="checkbox" id="lreplay" ${L.replay?'checked':''}> ${SR && L.mic ? 'Also read my line back when I get it right' : 'Read my line back after the pause'}</label>
+    </div>
+    ${L.micDenied ? '<p class="keys" style="color:var(--bad)">The microphone is blocked, so scoring is off. On iPhone, allow it in Settings › Safari › Microphone (or for this app), then reopen it.</p>' : ''}
+    <p class="keys">${SR && L.mic && !L.micDenied ? 'You hear the cue, then a tone. Say your line out loud. The app listens, scores you (80% of the words counts as got it), and reads the line back if you missed.' : 'You hear the cue, then a tone. Say your line out loud during the pause, then listen to check yourself.'} Mark lines as you go if you like; the run keeps going either way. Keep your screen on while it plays. Space bar starts and pauses.</p>
+  </div>`;
+  $('#lplay').onclick = () => { if (done){ pos = 0; L.phase='Ready'; } toggleListen(); };
+  $('#lback').onclick = () => jump(-1);
+  $('#lskip').onclick = () => jump(1);
+  const g = $('#lgot'), b = $('#lmiss');
+  if (g) g.onclick = () => { store[m.n]='got'; save(); progress(); g.disabled = b.disabled = true; g.textContent='Marked ✓'; };
+  if (b) b.onclick = () => { store[m.n]='miss'; save(); progress(); g.disabled = b.disabled = true; b.textContent='Marked ✗'; };
+  $('#lpace').onchange = e => { L.pace = e.target.value; saveL(); };
+  $('#lrate').onchange = e => { L.rate = +e.target.value; saveL(); };
+  $('#lreplay').onchange = e => { L.replay = e.target.checked; saveL(); };
+  const mc = $('#lmic'); if (mc) mc.onchange = e => { L.mic = e.target.checked; saveL(); renderListen(); };
+}
+
+buildDeck();
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
